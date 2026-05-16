@@ -1,4 +1,6 @@
-# kraken-api-mcp
+# kraken-api-mcp-server
+
+[![Build and Test CI](https://github.com/jambolo/kraken-api-mcp-server/actions/workflows/python-ci.yml/badge.svg)](https://github.com/jambolo/kraken-api-mcp-server/actions/workflows/python-ci.yml)
 
 MCP server for the Kraken exchange — Spot REST, Futures REST, and Futures WebSocket via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
@@ -19,8 +21,8 @@ MCP server for the Kraken exchange — Spot REST, Futures REST, and Futures WebS
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/kraken-api-mcp.git
-cd kraken-api-mcp
+git clone https://github.com/yourusername/kraken-api-mcp-server.git
+cd kraken-api-mcp-server
 uv sync --extra dev
 ```
 
