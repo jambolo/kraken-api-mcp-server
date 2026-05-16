@@ -1,6 +1,3 @@
-import sys
-
-
 def main() -> None:
     from .server import create_server
     mcp = create_server()

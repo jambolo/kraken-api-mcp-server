@@ -9,7 +9,7 @@ from ..http_client import KrakenHttpClient
 
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
-    def _check_transfers() -> dict | None:
+    def _check_transfers() -> dict[str, Any] | None:
         if not cfg.transfers_enabled:
             return error_response("disabled_by_config", "Set KRAKEN_TRANSFERS_ENABLED=true to enable Futures transfers")
         return None
@@ -20,7 +20,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         toAccount: Annotated[str, "Destination account identifier: 'cash' or a margin account symbol."],
         unit: Annotated[str, "Asset/currency to transfer (e.g. 'XBT', 'USD', 'USDT')."],
         amount: Annotated[float, "Amount to transfer. Must not exceed the available balance in fromAccount."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Transfer funds between Kraken Futures margin accounts or between a margin account and the cash account. Requires KRAKEN_TRANSFERS_ENABLED=true.
 
         Common use: move collateral from 'cash' into 'PI_XBTUSD' to increase
@@ -42,7 +42,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         unit: Annotated[str, "Asset/currency to transfer (e.g. 'XBT', 'USD')."],
         amount: Annotated[float, "Amount to transfer."],
         subaccountUid: Annotated[str, "UID of the subaccount involved in the transfer."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Transfer funds between a Kraken Futures master account and a subaccount. Requires KRAKEN_TRANSFERS_ENABLED=true.
 
         The calling API key must belong to the master account.

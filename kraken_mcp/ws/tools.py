@@ -20,7 +20,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     @mcp.tool()
     async def fws_subscribe_book(
         product_ids: Annotated[list[str], "Futures symbols to subscribe to (e.g. ['PI_XBTUSD', 'PF_ETHUSD']). Each symbol gets its own L2 book maintained in server-side cache."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket order book feed for one or more symbols.
 
         The server applies incoming book snapshots and deltas to maintain an up-to-date
@@ -34,7 +34,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     @mcp.tool()
     async def fws_subscribe_ticker(
         product_ids: Annotated[list[str], "Futures symbols to subscribe to (e.g. ['PI_XBTUSD'])."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket full ticker feed.
 
         Provides mark price, bid/ask, last trade, funding rate, open interest,
@@ -48,7 +48,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     @mcp.tool()
     async def fws_subscribe_ticker_lite(
         product_ids: Annotated[list[str], "Futures symbols to subscribe to."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket ticker_lite feed (reduced payload).
 
         A lightweight alternative to the full ticker — fewer fields, lower bandwidth.
@@ -61,7 +61,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     @mcp.tool()
     async def fws_subscribe_trade(
         product_ids: Annotated[list[str], "Futures symbols to subscribe to."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket public trade tape.
 
         Each message contains executed price, size, side, and timestamp.
@@ -73,7 +73,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "trade", "product_ids": product_ids}
 
     @mcp.tool()
-    async def fws_subscribe_heartbeat() -> dict:
+    async def fws_subscribe_heartbeat() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket heartbeat feed.
 
         Heartbeats arrive approximately every second and confirm the connection
@@ -87,7 +87,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     # ── Private subscriptions ─────────────────────────────────────────────────
 
     @mcp.tool()
-    async def fws_subscribe_open_orders() -> dict:
+    async def fws_subscribe_open_orders() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket open_orders private feed.
 
         Streams real-time updates for all open orders: placements, fills,
@@ -102,7 +102,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "open_orders"}
 
     @mcp.tool()
-    async def fws_subscribe_open_orders_verbose() -> dict:
+    async def fws_subscribe_open_orders_verbose() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket open_orders_verbose private feed.
 
         Like open_orders but includes additional fields: order type, limit price,
@@ -118,7 +118,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     @mcp.tool()
     async def fws_subscribe_fills(
         product_ids: Annotated[list[str] | None, "Optional list of symbols to filter fill notifications to. Omit to receive fills across all symbols."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket fills (execution) private feed.
 
         Each fill message contains symbol, side, price, quantity, fee, and timestamp.
@@ -132,7 +132,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "fills", "product_ids": product_ids}
 
     @mcp.tool()
-    async def fws_subscribe_open_positions() -> dict:
+    async def fws_subscribe_open_positions() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket open_positions private feed.
 
         Streams position updates whenever a fill changes position size, side, or
@@ -146,7 +146,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "open_positions"}
 
     @mcp.tool()
-    async def fws_subscribe_balances() -> dict:
+    async def fws_subscribe_balances() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket balances private feed.
 
         Streams real-time balance updates whenever fills, transfers, or funding
@@ -160,11 +160,11 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "balances"}
 
     @mcp.tool()
-    async def fws_subscribe_account_log() -> dict:
+    async def fws_subscribe_account_log() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket account_log private feed.
 
         Streams a chronological ledger of account events: funding payments,
-        liquidations, transfers, realised PnL settlements, and fee credits.
+        liquidations, transfers, realized PnL settlements, and fee credits.
         Messages accumulate in a ring buffer (last 1000). Requires Futures API credentials.
         """
         if not cfg.has_futures_auth:
@@ -174,7 +174,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "account_log"}
 
     @mcp.tool()
-    async def fws_subscribe_notifications() -> dict:
+    async def fws_subscribe_notifications() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket notifications_auth private feed.
 
         Receives account-specific platform notifications: margin call warnings,
@@ -188,7 +188,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "subscribed", "feed": "notifications_auth"}
 
     @mcp.tool()
-    async def fws_subscribe_deposits_withdrawals() -> dict:
+    async def fws_subscribe_deposits_withdrawals() -> dict[str, Any]:
         """Subscribe to the Kraken Futures WebSocket deposits_withdrawals private feed.
 
         Streams incoming deposit confirmations and outgoing withdrawal events
@@ -207,7 +207,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     async def fws_unsubscribe(
         feed: Annotated[str, "Feed name to unsubscribe from (e.g. 'ticker', 'book', 'fills', 'open_orders')."],
         product_ids: Annotated[list[str] | None, "For symbol-specific feeds, the symbols to unsubscribe. Omit for account-wide feeds (e.g. 'open_orders', 'balances')."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Unsubscribe from a Kraken Futures WebSocket feed.
 
         Sends an unsubscribe message over the WebSocket and removes the subscription
@@ -218,7 +218,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"status": "unsubscribed", "feed": feed, "product_ids": product_ids}
 
     @mcp.tool()
-    async def fws_list_subscriptions() -> dict:
+    async def fws_list_subscriptions() -> dict[str, Any]:
         """Return all active Kraken Futures WebSocket subscriptions and their buffer queue depths.
 
         Each entry includes the feed name, product ID (if applicable), and for
@@ -230,7 +230,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
     async def fws_snapshot(
         feed: Annotated[str, "Feed name to read (e.g. 'ticker', 'book', 'open_orders', 'balances', 'fills')."],
         product_id: Annotated[str | None, "Symbol for symbol-specific feeds (e.g. 'PI_XBTUSD'). Omit for account-wide feeds."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the latest cached state for a subscribed Kraken Futures WebSocket feed.
 
         For last-message-wins feeds (ticker, open_orders, balances, open_positions):
@@ -245,7 +245,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         feed: Annotated[str, "Feed name to drain (e.g. 'fills', 'trade', 'account_log', 'notifications_auth')."],
         product_id: Annotated[str | None, "Symbol for symbol-specific feeds. Omit for account-wide feeds."] = None,
         max: Annotated[int, "Maximum number of messages to return. The oldest messages beyond this limit are discarded."] = 1000,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return and clear buffered messages for a Kraken Futures WebSocket ring-buffer feed.
 
         Retrieves up to max messages from the buffer and clears them, enabling
@@ -256,7 +256,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         return {"feed": feed, "product_id": product_id, "count": len(messages), "messages": messages}
 
     @mcp.tool()
-    async def fws_status() -> dict:
+    async def fws_status() -> dict[str, Any]:
         """Return the current Kraken Futures WebSocket connection status and diagnostics.
 
         Includes: whether the connection is active, total reconnect count,
@@ -274,7 +274,7 @@ def register(mcp: Any, cfg: Config, ws_client: FuturesWSClient, state: WSState) 
         }
 
     @mcp.tool()
-    async def fws_close() -> dict:
+    async def fws_close() -> dict[str, Any]:
         """Disconnect the Kraken Futures WebSocket connection.
 
         Stops the background connection task and closes the socket.

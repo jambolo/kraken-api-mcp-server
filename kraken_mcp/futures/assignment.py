@@ -9,7 +9,7 @@ from ..http_client import KrakenHttpClient
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
     @mcp.tool()
-    async def futures_assign_current() -> dict:
+    async def futures_assign_current() -> dict[str, Any]:
         """Return the current assignment program participation for the Kraken Futures account.
 
         The assignment program allows the account to receive position assignments
@@ -22,7 +22,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def futures_assign_add(
         symbol: Annotated[str, "Futures symbol to participate in assignment for (e.g. 'PI_XBTUSD')."],
         maxQuantity: Annotated[float, "Maximum number of contracts that can be assigned to this account per event."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Enroll in the assignment program for a Kraken Futures symbol.
 
         When a liquidation occurs, the account may receive contracts up to
@@ -36,7 +36,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def futures_assign_delete(
         symbol: Annotated[str, "Futures symbol to remove from the assignment program (e.g. 'PI_XBTUSD')."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Remove the account from the assignment program for a Kraken Futures symbol.
 
         After deletion, the account will no longer receive contract assignments for
@@ -47,7 +47,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         })
 
     @mcp.tool()
-    async def futures_assign_history() -> dict:
+    async def futures_assign_history() -> dict[str, Any]:
         """Return the assignment program event history for the Kraken Futures account.
 
         Each entry records an assignment event: symbol, quantity assigned,

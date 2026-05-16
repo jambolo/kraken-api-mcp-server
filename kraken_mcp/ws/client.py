@@ -6,7 +6,6 @@ import logging
 from typing import Any
 
 import websockets
-import websockets.exceptions
 
 from ..auth import sign_futures_ws_challenge
 from ..config import Config
@@ -24,7 +23,7 @@ class FuturesWSClient:
         self._state = state
         self._ws: Any = None  # websockets.WebSocketClientProtocol
         self._running = False
-        self._task: asyncio.Task | None = None
+        self._task: asyncio.Task[None] | None = None
         self._ready = asyncio.Event()
         self._challenge: str | None = None
         self._signed_challenge: str | None = None

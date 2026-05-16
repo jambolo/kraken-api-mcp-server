@@ -52,7 +52,7 @@ def register(mcp: Any, cfg: Config, state: WSState) -> None:
         """Latest Kraken Futures WebSocket open positions snapshot (last-message-wins cache).
 
         Reflects the most recent open_positions feed message: symbol, side, size,
-        average entry price, mark price, unrealised PnL, and liquidation price.
+        average entry price, mark price, unrealized PnL, and liquidation price.
 
         Returns {status: 'not-subscribed'} until fws_subscribe_open_positions is called.
         Requires Futures API credentials.

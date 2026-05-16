@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 
 class KrakenError(Exception):
@@ -57,7 +57,7 @@ def normalize_spot_response(
     rate_limit_remaining: int,
     rate_limit_reset_s: float,
 ) -> dict[str, Any]:
-    kraken_errors = body.get("error", [])
+    kraken_errors: list[str] = body.get("error", [])
     ok = raw_status == 200 and not kraken_errors
     errors = [
         {"code": _map_spot_error(e), "message": e}
@@ -86,7 +86,7 @@ def normalize_futures_response(
     if not ok:
         err_msg = body.get("error", body.get("errors", f"HTTP {raw_status}"))
         if isinstance(err_msg, list):
-            errors = [{"code": _map_futures_error(e), "message": e} for e in err_msg]
+            errors = [{"code": _map_futures_error(e), "message": e} for e in cast(list[str], err_msg)]
         elif isinstance(err_msg, str):
             errors = [{"code": _map_futures_error(err_msg), "message": err_msg}]
         else:

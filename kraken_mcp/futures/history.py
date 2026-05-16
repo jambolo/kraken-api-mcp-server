@@ -17,7 +17,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' (oldest first) or 'desc' (newest first, default)."] = None,
         tradeable: Annotated[str | None, "Filter results to a specific symbol (e.g. 'PI_XBTUSD')."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return private execution (fill) history for the Futures account from /api/history/v3.
 
         Each entry includes symbol, side, price, quantity, fee, fill type,
@@ -36,7 +36,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' or 'desc' (default)."] = None,
         tradeable: Annotated[str | None, "Filter to a specific symbol (e.g. 'PI_XBTUSD')."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return private order history for the Futures account from /api/history/v3.
 
         Includes all order states: filled, partially filled, cancelled, and expired.
@@ -54,7 +54,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' or 'desc' (default)."] = None,
         tradeable: Annotated[str | None, "Filter to a specific symbol."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return trigger order event history (stop/take-profit activations) from /api/history/v3.
 
         Each entry records when a trigger order was activated, the trigger price,
@@ -72,7 +72,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         continuation_token: Annotated[str | None, "Pagination token from a previous response."] = None,
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' or 'desc' (default)."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return public trade execution history for a Futures symbol from /api/history/v3.
 
         No authentication required. Returns the public trade tape with price,
@@ -91,7 +91,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         continuation_token: Annotated[str | None, "Pagination token from a previous response."] = None,
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' or 'desc' (default)."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return public order book event history for a Futures symbol from /api/history/v3.
 
         Records order placements, modifications, and cancellations on the public book.
@@ -110,7 +110,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         continuation_token: Annotated[str | None, "Pagination token from a previous response."] = None,
         since: Annotated[str | None, "ISO 8601 timestamp; return records with timestamp >= this value."] = None,
         sort: Annotated[str | None, "Sort order: 'asc' or 'desc' (default)."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return public mark/index price history for a Futures symbol from /api/history/v3.
 
         Provides the time series of mark price and index price.

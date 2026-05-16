@@ -13,7 +13,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def spot_subaccount_create(
         username: Annotated[str, "Desired username for the new subaccount (must be unique within the master account)."],
         email: Annotated[str, "Email address for the new subaccount. Used for login and notifications."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Create a new Spot subaccount under the current master account (institutional accounts only).
 
         Subaccounts share the master account's fee tier but have independent balances
@@ -30,7 +30,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         amount: Annotated[str, "Amount to transfer as a string."],
         from_: Annotated[str, "UID of the source account (master or subaccount)."],
         to: Annotated[str, "UID of the destination account (master or subaccount)."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Transfer funds between the master Spot account and a subaccount. Requires KRAKEN_TRANSFERS_ENABLED=true.
 
         Transfers are immediate and internal (no blockchain transaction).

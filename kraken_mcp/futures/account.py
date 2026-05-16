@@ -9,7 +9,7 @@ from ..http_client import KrakenHttpClient
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
     @mcp.tool()
-    async def futures_account_get() -> dict:
+    async def futures_account_get() -> dict[str, Any]:
         """Return the Kraken Futures account summary including balances and margin state.
 
         Includes cash account balance, margin account balances per collateral type,
@@ -19,16 +19,16 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         return await client.futures_private_get("/derivatives/api/v3/accounts")
 
     @mcp.tool()
-    async def futures_account_open_positions() -> dict:
+    async def futures_account_open_positions() -> dict[str, Any]:
         """Return all open Kraken Futures positions held by the account.
 
         Each position includes symbol, side, size, entry price, mark price,
-        unrealised PnL, funding accrued, liquidation price, and initial margin used.
+        unrealized PnL, funding accrued, liquidation price, and initial margin used.
         """
         return await client.futures_private_get("/derivatives/api/v3/openpositions")
 
     @mcp.tool()
-    async def futures_account_unwind_queue() -> dict:
+    async def futures_account_unwind_queue() -> dict[str, Any]:
         """Return the auto-deleveraging (ADL) unwind queue for the Futures account.
 
         Positions appear in the queue when the account is near the insurance fund trigger.
@@ -43,7 +43,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         orderType: Annotated[str, "Order type: 'lmt', 'post', 'ioc', 'mkt', 'stp', or 'take_profit'."],
         size: Annotated[float, "Proposed order size in contracts."],
         limitPrice: Annotated[float | None, "Limit price for limit/stop-limit orders. Required when orderType is 'lmt', 'post', or 'ioc'."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Calculate the initial margin required for a hypothetical Futures order.
 
         Use this before futures_trade_send_order to verify the account has sufficient
@@ -61,7 +61,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         side: Annotated[str, "Order side: 'buy' or 'sell'."],
         orderType: Annotated[str, "Order type: 'lmt', 'post', 'ioc', 'mkt', 'stp', or 'take_profit'."],
         limitPrice: Annotated[float | None, "Limit price. Required for limit order types."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the maximum order size the account can place given current margin availability.
 
         Useful for sizing the largest allowable position before calling
@@ -73,7 +73,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         })
 
     @mcp.tool()
-    async def futures_account_notifications() -> dict:
+    async def futures_account_notifications() -> dict[str, Any]:
         """Return platform and account notifications for the Kraken Futures account.
 
         Includes margin call warnings, liquidation notices, system announcements,
@@ -82,7 +82,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         return await client.futures_private_get("/derivatives/api/v3/notifications")
 
     @mcp.tool()
-    async def futures_account_fee_volumes() -> dict:
+    async def futures_account_fee_volumes() -> dict[str, Any]:
         """Return the account's 30-day volume across all Futures fee schedules.
 
         Used to determine the current fee tier (maker/taker rates).
@@ -93,7 +93,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def futures_account_fills(
         lastFillTime: Annotated[str | None, "ISO 8601 timestamp; return fills that occurred after this time. Omit for the most recent fills."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return recent fill (execution) history for the Kraken Futures account.
 
         Each fill includes symbol, side, price, size, fee, fill type

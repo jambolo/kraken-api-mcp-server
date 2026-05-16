@@ -10,7 +10,7 @@ from ..http_client import KrakenHttpClient
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
     @mcp.tool()
-    async def futures_subaccount_list() -> dict:
+    async def futures_subaccount_list() -> dict[str, Any]:
         """Return all Kraken Futures subaccounts associated with the master account.
 
         Each entry includes the subaccount UID, name, and whether trading is enabled.
@@ -21,7 +21,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def futures_subaccount_trading_get(
         uid: Annotated[str, "Subaccount UID (from futures_subaccount_list)."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return whether trading is currently enabled for a Kraken Futures subaccount.
 
         Returns a boolean tradingEnabled field for the specified subaccount UID.
@@ -32,7 +32,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def futures_subaccount_trading_set(
         uid: Annotated[str, "Subaccount UID (from futures_subaccount_list)."],
         enabled: Annotated[bool, "True to enable trading for this subaccount, false to disable."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Enable or disable trading for a Kraken Futures subaccount. Requires KRAKEN_TRADING_ENABLED=true.
 
         Disabling trading prevents the subaccount from placing new orders but does

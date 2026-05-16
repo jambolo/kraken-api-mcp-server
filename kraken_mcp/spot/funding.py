@@ -12,7 +12,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_funding_deposit_methods(
         asset: Annotated[str, "Asset to get deposit methods for (e.g. 'XBT', 'ETH', 'USD')."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return available deposit methods for a Spot asset.
 
         Each method includes its name, minimum deposit amount, fee structure,
@@ -27,7 +27,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         method: Annotated[str, "Deposit method name as returned by spot_funding_deposit_methods (e.g. 'Bitcoin')."],
         new: Annotated[bool | None, "If true, generate a fresh deposit address even if one already exists. Default false."] = None,
         amount: Annotated[str | None, "For methods that require a specific amount (e.g. fiat rails), the exact deposit amount as a string."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return deposit addresses for a Spot asset and deposit method.
 
         Re-uses an existing address unless new=true is requested.
@@ -45,7 +45,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         end: Annotated[str | None, "End of time range as Unix timestamp."] = None,
         cursor: Annotated[str | None, "Pagination cursor returned in the previous response."] = None,
         limit: Annotated[int | None, "Maximum number of records per page (default 25, max 50)."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return recent deposit history for the Spot account with pagination.
 
         Each entry includes the asset, method, network transaction ID, amount,
@@ -62,7 +62,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         from_: Annotated[str, "Source wallet: 'Spot Wallet' or 'Futures Wallet'."],
         to: Annotated[str, "Destination wallet: 'Spot Wallet' or 'Futures Wallet'."],
         amount: Annotated[str, "Amount to transfer as a string to preserve precision."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Transfer funds between the Kraken Spot and Futures wallets (internal only). Requires KRAKEN_TRANSFERS_ENABLED=true.
 
         This is an on-platform transfer — no blockchain transaction occurs.

@@ -17,7 +17,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         fields: Annotated[str | None, "Comma-delimited list of fields to include. Omit for all fields."] = None,
         starttm: Annotated[int | None, "Export window start as Unix timestamp. Omit for account inception."] = None,
         endtm: Annotated[int | None, "Export window end as Unix timestamp. Omit for current time."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Request a data export for trades or ledgers on Kraken Spot.
 
         Export generation is asynchronous. Poll spot_export_status until the
@@ -32,7 +32,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_export_status(
         report: Annotated[str, "Report type to list: 'trades' or 'ledgers'."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the status of all pending and completed Spot data export requests.
 
         Status values: 'Queued', 'Processing', 'Processed', 'Deleted'.
@@ -43,7 +43,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_export_retrieve(
         id: Annotated[str, "Export report ID from spot_export_status (status must be 'Processed')."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Download a completed Spot data export. Returns binary content encoded as base64.
 
         The response includes 'content_base64' and 'content_type' fields.
@@ -78,7 +78,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def spot_export_delete(
         type: Annotated[str, "'delete' to permanently remove a processed report, or 'cancel' to abort a queued/processing export."],
         id: Annotated[str, "Export report ID to delete or cancel."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Delete or cancel a Spot data export report.
 
         Use 'cancel' to abort a queued or in-progress export, or 'delete' to
@@ -87,7 +87,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         return await client.spot_private_post("/0/private/RemoveExport", {"type": type, "id": id})
 
     @mcp.tool()
-    async def spot_ws_get_token() -> dict:
+    async def spot_ws_get_token() -> dict[str, Any]:
         """Return a short-lived WebSocket authentication token for Kraken Spot WS v2.
 
         The token is valid for 15 minutes. Pass it as 'token' when authenticating

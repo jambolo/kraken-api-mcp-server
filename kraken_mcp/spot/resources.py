@@ -3,7 +3,8 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from typing import Any
+from collections.abc import Awaitable, Callable
+from typing import Any, cast
 
 from ..config import Config
 from ..http_client import KrakenHttpClient
@@ -19,7 +20,7 @@ class _Cache:
     def is_fresh(self) -> bool:
         return self._value is not None and (time.monotonic() - self._fetched_at) < self.ttl
 
-    async def get(self, fetch_fn) -> Any:
+    async def get(self, fetch_fn: Callable[[], Awaitable[Any]]) -> Any:
         async with self._lock:
             if not self.is_fresh():
                 result = await fetch_fn()
@@ -86,13 +87,17 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         data = await _pairs_cache.get(
             lambda: client.spot_public_get("/0/public/AssetPairs")
         )
-        result = data.get("data") or {}
-        match = result.get(pair) or result.get(pair.upper())
+        result: dict[str, Any] = data.get("data") or {}
+        match = result.get(pair)
+        if match is None:
+            match = result.get(pair.upper())
         if match is None:
             for v in result.values():
-                if isinstance(v, dict) and v.get("altname", "").upper() == pair.upper():
-                    match = v
-                    break
+                if isinstance(v, dict):
+                    entry = cast(dict[str, Any], v)
+                    if entry.get("altname", "").upper() == pair.upper():
+                        match = entry
+                        break
         return json.dumps({"ok": True, "data": match, "errors": []})
 
     @mcp.resource("kraken-spot://ticker/{pair}")

@@ -9,7 +9,7 @@ from ..http_client import KrakenHttpClient
 
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
-    def _check_trading() -> dict | None:
+    def _check_trading() -> dict[str, Any] | None:
         if not cfg.trading_enabled:
             return error_response("disabled_by_config", "Set KRAKEN_TRADING_ENABLED=true to enable trading tools")
         return None
@@ -35,7 +35,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         close_price: Annotated[str | None, "Trigger price for the attached close order."] = None,
         close_price2: Annotated[str | None, "Secondary price for the attached close order (for stop-loss-limit)."] = None,
         validate: Annotated[bool, "If true, validate inputs and return the would-be order description without submitting. Use for dry-runs."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Place a new order on Kraken Spot. Requires KRAKEN_TRADING_ENABLED=true.
 
         All price and volume fields are strings to avoid floating-point rounding.
@@ -58,10 +58,10 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_trade_add_order_batch(
         pair: Annotated[str, "Asset pair for all orders in the batch (e.g. 'XBTUSD')."],
-        orders: Annotated[list[dict], "List of up to 15 order dicts. Each dict uses the same fields as spot_trade_add_order minus 'pair'."],
+        orders: Annotated[list[dict[str, Any]], "List of up to 15 order dicts. Each dict uses the same fields as spot_trade_add_order minus 'pair'."],
         deadline: Annotated[str | None, "RFC3339 timestamp after which the batch is rejected if not fully processed."] = None,
         validate: Annotated[bool, "Validate all orders without submitting any."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Place a batch of up to 15 orders for a single asset pair atomically. Requires KRAKEN_TRADING_ENABLED=true.
 
         All orders must be for the same pair. Partial fills are possible; each order
@@ -86,7 +86,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         post_only: Annotated[bool | None, "If true, enforce post-only on the amended order."] = None,
         deadline: Annotated[str | None, "RFC3339 timestamp; reject amend if not processed by this time."] = None,
         validate: Annotated[bool, "Validate the amend without applying it."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Amend an open Spot order in-place without cancel-and-replace. Requires KRAKEN_TRADING_ENABLED=true.
 
         In-place amendment preserves queue priority when only quantity is reduced.
@@ -113,7 +113,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         userref: Annotated[int | None, "New user reference ID."] = None,
         deadline: Annotated[str | None, "RFC3339 deadline for processing."] = None,
         validate: Annotated[bool, "Validate without executing the edit."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel and replace an open Spot order (legacy EditOrder). Requires KRAKEN_TRADING_ENABLED=true.
 
         This is a cancel-and-replace; queue priority is not preserved.
@@ -131,7 +131,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def spot_trade_cancel_order(
         txid: Annotated[str | None, "Transaction ID of the order to cancel. Provide exactly one of txid or cl_ord_id."] = None,
         cl_ord_id: Annotated[str | None, "Client order ID of the order to cancel."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel a single open Spot order by transaction ID or client order ID. Requires KRAKEN_TRADING_ENABLED=true."""
         if err := _check_trading():
             return err
@@ -140,7 +140,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_trade_cancel_all_orders(
         confirm: Annotated[bool, "Must be true to proceed. Returns an error without executing if false."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel ALL open Spot orders. Requires KRAKEN_TRADING_ENABLED=true AND confirm=true.
 
         This is irreversible. Double-check open positions before calling.
@@ -155,7 +155,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_trade_cancel_all_orders_after(
         timeout: Annotated[int, "Seconds until all open orders are cancelled. Set to 0 to disable an active timer."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Set or disable the Spot dead-man's switch. Requires KRAKEN_TRADING_ENABLED=true.
 
         When active, Kraken cancels all open orders if the timer is not renewed before it expires.
@@ -168,7 +168,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_trade_cancel_order_batch(
         orders: Annotated[list[str], "List of transaction IDs or client order IDs to cancel (max 50)."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel up to 50 open Spot orders in a single request. Requires KRAKEN_TRADING_ENABLED=true.
 
         Returns counts of successfully cancelled and failed cancellations.

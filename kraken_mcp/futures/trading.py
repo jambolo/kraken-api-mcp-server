@@ -9,7 +9,7 @@ from ..http_client import KrakenHttpClient
 
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
-    def _check_trading() -> dict | None:
+    def _check_trading() -> dict[str, Any] | None:
         if not cfg.trading_enabled:
             return error_response("disabled_by_config", "Set KRAKEN_TRADING_ENABLED=true to enable futures trading tools")
         return None
@@ -27,7 +27,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         triggerSignal: Annotated[str | None, "Price signal used to trigger stop/trailing orders: 'mark' (default), 'spot', or 'last'."] = None,
         trailingStopDeviationUnit: Annotated[str | None, "Unit for trailing stop distance: 'PERCENT' or 'QUOTE_CURRENCY'. Required for trailing_stop orders."] = None,
         trailingStopMaxDeviation: Annotated[float | None, "Maximum trailing distance in the chosen unit. Required for trailing_stop orders."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Send a new order to Kraken Futures. Requires KRAKEN_TRADING_ENABLED=true.
 
         Returns the order ID and status ('placed', 'partiallyFilled', 'filled', etc.).
@@ -52,7 +52,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         size: Annotated[float | None, "New order size in contracts. Omit to keep current size."] = None,
         limitPrice: Annotated[float | None, "New limit price. Omit to keep current price."] = None,
         stopPrice: Annotated[float | None, "New stop/trigger price. Omit to keep current price."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Edit the size or price of an open Kraken Futures order. Requires KRAKEN_TRADING_ENABLED=true.
 
         At least one of size, limitPrice, or stopPrice must be provided.
@@ -69,7 +69,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def futures_trade_cancel_order(
         order_id: Annotated[str | None, "Kraken-assigned order ID. Provide exactly one of order_id or cliOrdId."] = None,
         cliOrdId: Annotated[str | None, "Client-assigned order ID. Provide exactly one of order_id or cliOrdId."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel a single open Kraken Futures order. Requires KRAKEN_TRADING_ENABLED=true."""
         if err := _check_trading():
             return err
@@ -81,7 +81,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def futures_trade_cancel_all_orders(
         symbol: Annotated[str | None, "If provided, cancel only orders for this symbol. Omit to cancel all open orders across all symbols."] = None,
         confirm: Annotated[bool, "Must be true to proceed. Returns an error without executing if false."] = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Cancel all open Kraken Futures orders. Requires KRAKEN_TRADING_ENABLED=true AND confirm=true.
 
         This is irreversible. When symbol is omitted, ALL open orders across ALL
@@ -96,7 +96,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def futures_trade_cancel_all_after(
         timeout: Annotated[int, "Seconds until all open orders are cancelled. Set to 0 to disarm an active timer."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Set or disable the Kraken Futures dead-man's switch. Requires KRAKEN_TRADING_ENABLED=true.
 
         Kraken cancels all open orders if this timer is not refreshed before expiry.
@@ -109,8 +109,8 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
     @mcp.tool()
     async def futures_trade_batch_order(
-        batchOrder: Annotated[list[dict], "List of order operations. Each dict must have an 'order' key set to 'send', 'edit', or 'cancel', plus the relevant fields for that operation."],
-    ) -> dict:
+        batchOrder: Annotated[list[dict[str, Any]], "List of order operations. Each dict must have an 'order' key set to 'send', 'edit', or 'cancel', plus the relevant fields for that operation."],
+    ) -> dict[str, Any]:
         """Execute multiple Futures order operations (send/edit/cancel) in a single atomic request. Requires KRAKEN_TRADING_ENABLED=true.
 
         Operations are processed in order. If any operation fails, subsequent operations
@@ -125,7 +125,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         })
 
     @mcp.tool()
-    async def futures_trade_open_orders() -> dict:
+    async def futures_trade_open_orders() -> dict[str, Any]:
         """Return all currently open Kraken Futures orders for the account.
 
         Each order includes the symbol, side, order type, size, limit/stop price,
@@ -136,7 +136,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def futures_trade_orders_status(
         orderIds: Annotated[list[str], "List of Kraken-assigned order IDs to query status for."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the current status of specific Kraken Futures orders by order ID.
 
         Returns the same fields as futures_trade_open_orders but targeted at

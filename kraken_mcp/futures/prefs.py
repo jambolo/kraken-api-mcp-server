@@ -9,24 +9,24 @@ from ..http_client import KrakenHttpClient
 
 def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
-    def _check_trading() -> dict | None:
+    def _check_trading() -> dict[str, Any] | None:
         if not cfg.trading_enabled:
             return error_response("disabled_by_config", "Set KRAKEN_TRADING_ENABLED=true to modify Futures preferences")
         return None
 
     @mcp.tool()
-    async def futures_prefs_pnl_get() -> dict:
+    async def futures_prefs_pnl_get() -> dict[str, Any]:
         """Return the current PnL currency preferences for each Kraken Futures symbol.
 
-        Each entry maps a symbol to the currency in which realised PnL is settled
+        Each entry maps a symbol to the currency in which realized PnL is settled
         (e.g. 'XBT' for inverse contracts, 'USD' for linear contracts).
         """
         return await client.futures_private_get("/derivatives/api/v3/pnlpreferences")
 
     @mcp.tool()
     async def futures_prefs_pnl_set(
-        preferences: Annotated[dict, "Mapping of Futures symbol to desired PnL settlement currency (e.g. {'PI_XBTUSD': 'XBT', 'PF_ETHUSD': 'USD'}). Only include symbols you want to change."],
-    ) -> dict:
+        preferences: Annotated[dict[str, Any], "Mapping of Futures symbol to desired PnL settlement currency (e.g. {'PI_XBTUSD': 'XBT', 'PF_ETHUSD': 'USD'}). Only include symbols you want to change."],
+    ) -> dict[str, Any]:
         """Set PnL currency preferences for Kraken Futures symbols. Requires KRAKEN_TRADING_ENABLED=true.
 
         Changes take effect for positions opened after the update.
@@ -37,7 +37,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         return await client.futures_private_put("/derivatives/api/v3/pnlpreferences", preferences)
 
     @mcp.tool()
-    async def futures_prefs_leverage_get() -> dict:
+    async def futures_prefs_leverage_get() -> dict[str, Any]:
         """Return the current maximum leverage preferences for each Kraken Futures symbol.
 
         Each entry maps a symbol to the maximum leverage allowed for new positions.
@@ -47,8 +47,8 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
 
     @mcp.tool()
     async def futures_prefs_leverage_set(
-        preferences: Annotated[dict, "Mapping of Futures symbol to maximum leverage value (e.g. {'PI_XBTUSD': 10, 'PF_ETHUSD': 5}). Lower leverage reduces liquidation risk."],
-    ) -> dict:
+        preferences: Annotated[dict[str, Any], "Mapping of Futures symbol to maximum leverage value (e.g. {'PI_XBTUSD': 10, 'PF_ETHUSD': 5}). Lower leverage reduces liquidation risk."],
+    ) -> dict[str, Any]:
         """Set maximum leverage preferences for Kraken Futures symbols. Requires KRAKEN_TRADING_ENABLED=true.
 
         Reducing max leverage on a symbol with an active position will not

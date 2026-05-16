@@ -30,7 +30,7 @@ class WSState:
         self._subscriptions.discard((feed, product_id))
 
     def list_subscriptions(self) -> list[dict[str, Any]]:
-        result = []
+        result: list[dict[str, Any]] = []
         for feed, pid in sorted(self._subscriptions):
             key = (feed, pid)
             depth = len(self._rings[key]) if key in self._rings else None

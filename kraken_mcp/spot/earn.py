@@ -15,7 +15,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         limit: Annotated[int | None, "Maximum results per page."] = None,
         cursor: Annotated[str | None, "Pagination cursor from a previous response."] = None,
         lock_type: Annotated[list[str] | None, "Filter by lock type(s): 'flex', 'bonded', 'timed', or 'instant'."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return available Kraken Earn strategies with their terms and current APY.
 
         Each strategy includes the asset, lock type, minimum allocation,
@@ -33,7 +33,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
         hide_zero_allocations: Annotated[bool | None, "If true, omit strategies with a zero balance. Default false."] = None,
         converted_asset: Annotated[str | None, "Asset to express all converted amounts in (e.g. 'USD')."] = None,
         ascending: Annotated[bool | None, "Sort results ascending by strategy ID. Default false (descending)."] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return current Kraken Earn allocations for the account.
 
         Each entry shows the strategy, allocated amount, payout due, and lock expiry
@@ -48,7 +48,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def spot_earn_allocate(
         strategy_id: Annotated[str, "Earn strategy ID to allocate to (from spot_earn_strategies)."],
         amount: Annotated[str, "Amount of the strategy's asset to allocate, as a string."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Allocate funds to a Kraken Earn strategy. Requires KRAKEN_TRADING_ENABLED=true.
 
         Allocation may not be immediate for bonded strategies; use
@@ -65,7 +65,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     async def spot_earn_deallocate(
         strategy_id: Annotated[str, "Earn strategy ID to deallocate from (from spot_earn_strategies)."],
         amount: Annotated[str, "Amount to deallocate, as a string."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Deallocate funds from a Kraken Earn strategy. Requires KRAKEN_TRADING_ENABLED=true.
 
         Bonded strategies may have a lock period before deallocation completes.
@@ -80,7 +80,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_earn_allocate_status(
         strategy_id: Annotated[str, "Earn strategy ID to check allocation status for."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the pending allocation status for a Kraken Earn strategy.
 
         Call after spot_earn_allocate to determine when allocation completes.
@@ -91,7 +91,7 @@ def register(mcp: Any, cfg: Config, client: KrakenHttpClient) -> None:
     @mcp.tool()
     async def spot_earn_deallocate_status(
         strategy_id: Annotated[str, "Earn strategy ID to check deallocation status for."],
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Return the pending deallocation status for a Kraken Earn strategy.
 
         Call after spot_earn_deallocate to determine when funds return to the Spot wallet.

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from ..config import Config
@@ -19,7 +20,7 @@ class _Cache:
     def is_fresh(self) -> bool:
         return self._value is not None and (time.monotonic() - self._fetched_at) < self.ttl
 
-    async def get(self, fetch_fn) -> Any:
+    async def get(self, fetch_fn: Callable[[], Awaitable[Any]]) -> Any:
         async with self._lock:
             if not self.is_fresh():
                 result = await fetch_fn()

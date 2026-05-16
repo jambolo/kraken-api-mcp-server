@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import urllib.parse
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 import httpx
@@ -63,8 +64,8 @@ class KrakenHttpClient:
 
         payload: dict[str, Any] = self._clean(data) or {}
         sign_headers = sign_spot_request(path, payload, self._cfg.spot_api_secret)  # type: ignore
-        headers = {
-            "API-Key": self._cfg.spot_api_key,
+        headers: dict[str, str] = {
+            "API-Key": self._cfg.spot_api_key,  # type: ignore[assignment]
             **sign_headers,
         }
         url = self._cfg.spot_base_url + path
@@ -179,7 +180,7 @@ class KrakenHttpClient:
             return {}
         return {k: v for k, v in d.items() if v is not None}
 
-    async def _retry(self, call, retries: int = _MAX_RETRIES) -> httpx.Response:
+    async def _retry(self, call: Callable[[], Awaitable[httpx.Response]], retries: int = _MAX_RETRIES) -> httpx.Response:
         import asyncio
         last_exc: Exception | None = None
         for attempt in range(retries):
