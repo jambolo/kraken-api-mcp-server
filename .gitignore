@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv / venv
+.venv/
+venv/
+.python-version
+
+# pytest
+.pytest_cache/
+.cache/
+
+# coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# mypy / ruff / type checkers
+.mypy_cache/
+.ruff_cache/
+
+# VS Code
+.vscode/
+
+# Claude
+.claude/
