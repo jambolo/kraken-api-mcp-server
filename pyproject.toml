@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "kraken-api-mcp"
+name = "kraken-api-mcp-server"
 version = "0.1.0"
 description = "Kraken Spot + Futures MCP server"
 requires-python = ">=3.11"

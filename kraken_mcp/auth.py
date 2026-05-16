@@ -14,8 +14,9 @@ def _nonce() -> str:
 
 def sign_spot_request(uri_path: str, data: dict[str, Any], secret: str) -> dict[str, str]:
     """Return headers dict containing API-Sign for a Spot private request."""
-    nonce = _nonce()
-    data["nonce"] = nonce
+    if "nonce" not in data:
+        data["nonce"] = _nonce()
+    nonce = data["nonce"]
     post_data = urllib.parse.urlencode(data)
 
     message = (nonce + post_data).encode()
