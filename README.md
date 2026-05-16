@@ -84,6 +84,42 @@ Configure your MCP host (e.g. Claude Desktop) to launch this command with the re
 
 The `kraken-safety://config` resource lists which gates are currently open.
 
+## Security
+
+This server holds credentials that can move real money. Read this section before connecting it to a funded account.
+
+### What is sensitive
+
+- **`KRAKEN_SPOT_API_SECRET` and `KRAKEN_FUTURES_API_SECRET`** are HMAC signing keys. Anyone with the secret can sign requests as you. Treat them like the password to the account.
+- **API keys** (`KRAKEN_SPOT_API_KEY`, `KRAKEN_FUTURES_API_KEY`) identify the account and are required alongside the secret.
+- **WebSocket challenge tokens** and the **Spot WS auth token** returned by `spot_ws_get_token` grant time-limited account access.
+- **Tool responses** (balances, fills, deposit addresses, account ledgers) are financial PII and are persisted by whichever MCP host you run (e.g. Claude Desktop conversation history).
+
+### Operating guidance for users
+
+- **Use least-privilege API keys.** Create a dedicated Kraken API key for this server with only the permissions you need. **Disable withdrawal permission on the key** — this server never withdraws and Kraken cannot un-do a withdrawal. Restrict the key to a specific IP if you run on a fixed host.
+- **Configure a Kraken withdrawal allowlist** in your account settings as a layer outside this server's control.
+- **Keep the safety gates closed by default.** Leave `KRAKEN_TRADING_ENABLED` and `KRAKEN_TRANSFERS_ENABLED` set to `false` unless actively in use. Restore them to `false` after the session.
+- **Test in `KRAKEN_FUTURES_ENV=demo` first** when validating any new tool flow.
+- **Enable two-factor authentication** on your Kraken account (hardware token if supported).
+- **Treat the MCP transcript as sensitive.** Tool responses containing balances and orders are written to the MCP host's conversation log.
+- **Never expose this server over the network.** MCP stdio assumes a single local user is the only caller; there is no authentication layer. If remote access is required, front it with `mcp-proxy` plus authentication, or run inside a private tunnel.
+- **Watch for prompt-injection vectors.** A malicious document, web page, or pasted text can attempt to drive the LLM into calling trading or transfer tools. Keep the gates closed unless you are watching the session.
+- **If a key may be exposed, revoke it immediately** in Kraken account settings, then cancel any open orders manually via the Kraken web UI before generating a replacement.
+
+### Guidance for developers
+
+- **Never log or print the `Config` object or any `*_api_secret` field.** Avoid passing `cfg` to formatters, tracebacks, or pickling.
+- **`KRAKEN_LOG_LEVEL=DEBUG` is a development-only setting.** Future log statements added under DEBUG may capture signed headers or request bodies. Do not enable DEBUG in environments where logs are shipped off-host.
+- **Do not commit `.env`.** It is `.gitignore`d, but `git add -f` bypasses that. Install a secret-scanning pre-commit hook (`gitleaks`, `trufflehog`) on any contributor machine that has held real credentials. Enable GitHub push-protection on the repository.
+- **Treat any secret that touched a CI environment, shell history, screen recording, or chat as compromised** and rotate it.
+- **Route all Kraken HTTP calls through `KrakenHttpClient`** so rate limiting, retry, and error normalization apply uniformly. Avoid constructing standalone `httpx` clients in tool modules.
+- **All money amounts are strings**, not floats, to preserve precision. Maintain this convention in any new tool.
+- **Tests must not require real credentials.** Use the dummy base64 secrets in `tests/test_auth.py` as the template. If integration tests are ever added, gate them on demo-environment keys.
+- **Cancel-all and transfer tools are the highest-value targets** for prompt-injected misuse. New destructive tools should require an explicit out-of-band confirmation argument and should be gated by an env-var flag, following the existing pattern.
+
+A more complete audit of the codebase — including specific findings and their locations — lives in [security_audit.md](security_audit.md).
+
 ## Development
 
 ```bash
@@ -111,7 +147,7 @@ Every tool returns a uniform envelope:
 {"ok": true, "data": {}, "errors": [], "raw_status": 200, "rate_limit": {}}
 ```
 
-See [MCP-Design.md](MCP-Design.md) for full design documentation.
+See [mcp_design.md](mcp_design.md) for full design documentation.
 
 ## License
 

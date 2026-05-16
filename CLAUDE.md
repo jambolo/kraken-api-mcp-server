@@ -25,7 +25,7 @@ No build step. No linter configured yet.
 
 `server.py:create_server()` is the only entry point. It constructs `Config`, `KrakenHttpClient`, `FuturesWSClient`, and `WSState`, then calls `module.register(mcp, cfg, client)` for every sub-module. Tools are closures that capture `cfg` and `client` — there are no global singletons and no dependency injection framework.
 
-```
+```text
 server.py → spot/{public,trading,account,funding,earn,subaccounts,exports,resources}.py
           → futures/{public,trading,account,prefs,assignment,transfers,subaccounts,history,resources}.py
           → ws/{tools,resources}.py
@@ -67,6 +67,7 @@ Both raise `TimeoutError` if the wait would exceed `KRAKEN_HTTP_TIMEOUT_SECONDS`
 `ws/client.py:FuturesWSClient` — lazy-started (`start()` called on first subscribe tool). Persistent asyncio task with exponential-backoff reconnect. Private feeds trigger a challenge handshake (`_ensure_challenge()`), which is cached for the WS session lifetime. Subscriptions are tracked in `_pending_subs` and replayed on reconnect.
 
 `ws/state.py:WSState` — two cache strategies:
+
 - **Last-message-wins**: `ticker`, `ticker_lite`, `open_orders`, `open_positions`, `balances` — keyed by `(feed, product_id)`.
 - **Ring buffer** (size 1000): `trade`, `fills`, `account_log`, `deposits_withdrawals`, `notifications_auth`.
 - **L2 book**: delta-applied bid/ask dicts per symbol; `snapshot()` returns sorted levels.
@@ -76,3 +77,24 @@ Both raise `TimeoutError` if the wait would exceed `KRAKEN_HTTP_TIMEOUT_SECONDS`
 ### HTTP client
 
 `KrakenHttpClient` wraps `httpx.AsyncClient` (HTTP/2). `_retry()` retries up to 3 times on `{429, 500, 502, 503, 504}` with linear back-off. Client is lazily created and reused across calls.
+
+**Exception:** `spot/exports.py:spot_export_retrieve` constructs its own `httpx.AsyncClient` to handle binary export downloads. This bypasses the rate limiter, retry policy, and error envelope. Flagged in `security_audit.md` (H-2) for refactoring.
+
+## Security
+
+This server signs requests with HMAC keys that can move funds. Before changing code in `auth.py`, `http_client.py`, `config.py`, or any tool under `spot/` or `futures/`, read [security_audit.md](security_audit.md) and the **Security** section of [README.md](README.md).
+
+Rules for new code:
+
+- **Never log, print, format, or pickle the `Config` object** or any `*_api_secret` field. `Config` is a `@dataclass` — its auto-generated `__repr__` exposes secrets.
+- **All money amounts are `str`**, not `float`, to preserve precision. The one current exception (`futures_transfer.amount: float`) is a known bug tracked in the audit.
+- **Route every Kraken HTTP call through `KrakenHttpClient`.** Do not construct standalone `httpx.AsyncClient` instances in tool modules.
+- **Mutating tools must check the appropriate gate first** (`cfg.trading_enabled` or `cfg.transfers_enabled`) and return `error_response("disabled_by_config", ...)` before any work. Destructive tools (cancel-all, transfer-all) additionally require an explicit confirmation argument.
+- **Withdrawal/external-transfer tools are intentionally absent.** Do not add them.
+- **Tests must not require real Kraken credentials.** Use the dummy base64 secrets in `tests/test_auth.py` as the template.
+
+## Documents
+
+- [README.md](README.md) — user-facing setup, configuration table, safety model, security guidance.
+- [mcp_design.md](mcp_design.md) — full MCP design documentation (note: renamed from `MCP-Design.md`).
+- [security_audit.md](security_audit.md) — severity-tagged findings with file:line refs, action plan split into Claude-fixable (A-1…A-9) and user-only (U-1…U-12) items.
